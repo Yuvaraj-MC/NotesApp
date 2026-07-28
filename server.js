@@ -8,7 +8,11 @@ const mongoose = require('mongoose')
 const app = express()
 const PORT = process.env.PORT || 3500
 
+
 connectDB()
+
+app.use(express.json())
+app.use('/register', require('./routes/register'))
 
 mongoose.connection.once('open',() =>{
     console.log("Connected to mongoDB");
