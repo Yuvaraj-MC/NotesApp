@@ -16,7 +16,7 @@ app.use(express.json())
 
 // routes 
 
-app.use('/register', require('./routes/register'))
+app.use('/register', require('./routes/register'))//create account
 app.use('/auth', require('./routes/auth'))//this is for login we will get access token
 app.use(verifyJWT)
 app.use('/notes',require('./routes/notes'))

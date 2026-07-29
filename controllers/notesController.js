@@ -1,8 +1,14 @@
 const Note = require('../model/Note')
 const User = require('../model/User')
 
-const getAllNotes =async (req,res) =>{
-    const notes = await Note.find()
+const getAllNotes = async (req,res) =>{
+
+    const foundUser = await User.findOne({username: req.user})
+
+    if(!foundUser) return  res.status(401).json({message : 'user not found'})
+
+        const notes = await Note.find({user : foundUser._id})
+        
     if(!notes?.length){
        return  res.status(400).json({message : 'No Notes Found'})
     }
