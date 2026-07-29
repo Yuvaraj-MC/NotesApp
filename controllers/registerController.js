@@ -18,7 +18,7 @@ const handleNewUser = async (req ,res) =>{
                 password:hashedPwd
             })
 
-            res.status(201).json({'success': `New user ${user} created`})
+            res.status(201).json({'success': `New user ${user} Register`})
 
         }catch(err){
          res.status(500).json({'message':err.message})
