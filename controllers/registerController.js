@@ -9,6 +9,7 @@ const handleNewUser = async (req ,res) =>{
     }
 
     const duplicate = await User.findOne({username: user}).exec()
+    
     if(duplicate) return res.sendStatus(409)
 
         try{
