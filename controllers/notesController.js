@@ -3,16 +3,34 @@ const User = require('../model/User')
 
 const getAllNotes = async (req,res) =>{
 
-    const foundUser = await User.findOne({username: req.user})
+  const foundUser = await User.findOne({username:req.user}).exec()
 
-    if(!foundUser) return  res.status(401).json({message : 'user not found'})
+  if(!foundUser) return res.sendStatus(401).json({message: 'User not found'})
 
-        const notes = await Note.find({user : foundUser._id})
-        
-    if(!notes?.length){
-       return  res.status(400).json({message : 'No Notes Found'})
+    const {search,page,limit} = req.query
+    const filter = {user:foundUser._id}
+
+    if(search){
+        filter.title = {    $regex: search, $options: 'i'}
     }
-    res.json(notes)
+
+    const pageNumber = parseInt(page) || 1
+    const pageLimit = parseInt(limit) || 10
+    const skip = (pageNumber - 1) * pageLimit
+
+    const total = await Note.countDocuments(filter)
+    const notes = await Note.find(filter).skip(skip).limit(pageLimit)
+
+    if(!notes?.length){
+        return res.status(400).json({message : 'No notes found'})
+    }
+
+    res.json({
+        notes,
+        currentPage: pageNumber,
+        totalPages: Math.ceil(total / pageLimit),
+        totalNotes: total
+    })
 }
 
 const getByIdNote = async(req,res) =>{
