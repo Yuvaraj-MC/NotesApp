@@ -6,8 +6,12 @@ const handleRefreshToken  = async (req, res) =>{
 
     if(!cookies.jwt) return res.sendStatus(401)
         const refreshToken = cookies.jwt
+    console.log('Refresh Token found:' ,refreshToken)
+
         const foundUser = await User.findOne({
             username : jwt.decode(refreshToken)?.username}).exec()
+            
+            console.log('foundUser:',foundUser)
              if(!foundUser) return res.sendStatus(401)
 
                 jwt.verify(

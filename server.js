@@ -25,6 +25,7 @@ app.use(cookieParser())
 app.use('/register', require('./routes/register'))//create account
 app.use('/auth', require('./routes/auth'))//this is for login we will get access token
 app.use('/refresh',require('./routes/refresh'))
+app.use('/logout',require('./routes/logout'))//this is for logout we will clear the cookie
 
 
 

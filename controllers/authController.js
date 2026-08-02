@@ -29,7 +29,7 @@ const handleLogin = async (req, res) => {
       { expiresIn: "1d" },
     );
 
-    console.log("Refresh Token:", refreshToken);
+   
 
 
     res
