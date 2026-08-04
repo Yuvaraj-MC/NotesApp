@@ -1,32 +1,37 @@
-const User = require('../model/User')
-const jwt = require('jsonwebtoken')
+const User = require("../model/User");
+const jwt = require("jsonwebtoken");
 
-const handleRefreshToken  = async (req, res) =>{
-    const cookies = req.cookies
+const handleRefreshToken = async (req, res) => {
+  try {
+    const cookies = req.cookies;
 
-    if(!cookies.jwt) return res.sendStatus(401)
-        const refreshToken = cookies.jwt
-    console.log('Refresh Token found:' ,refreshToken)
+    if (!cookies.jwt) return res.sendStatus(401);
+    const refreshToken = cookies.jwt;
+    console.log("Refresh Token found:", refreshToken);
 
-        const foundUser = await User.findOne({
-            username : jwt.decode(refreshToken)?.username}).exec()
-            
-            console.log('foundUser:',foundUser)
-             if(!foundUser) return res.sendStatus(401)
+    const foundUser = await User.findOne({
+      username: jwt.decode(refreshToken)?.username,
+    }).exec();
 
-                jwt.verify(
-                    refreshToken,
-                    process.env.REFRESH_TOKEN_SECRET,
-                
-                (err,decoded) =>{
-                    if(err || foundUser.username!== decoded.username) return res.sendStatus(403)
-                        const accessToken = jwt.sign(
-                    {"username" : decoded.username},
-                    process.env.ACCESS_TOKEN_SECRET,
-                    {expiresIn:'30m'}
-                    )
-                    res.json({accessToken})
-                })
-}
+    console.log("foundUser:", foundUser);
+    if (!foundUser) return res.sendStatus(401);
 
-module.exports = {handleRefreshToken}
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET,
+
+      (err, decoded) => {
+        if (err || foundUser.username !== decoded.username)
+          return res.sendStatus(403);
+        const accessToken = jwt.sign(
+          { username: decoded.username },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: "30m" },
+        );
+        res.json({ accessToken });
+      },
+    );
+  } catch (err) {}
+};
+
+module.exports = { handleRefreshToken };

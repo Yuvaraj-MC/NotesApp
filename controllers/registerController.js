@@ -2,7 +2,10 @@ const User = require('../model/User')
 const bcrypt = require('bcrypt')
 
 const handleNewUser = async (req ,res) =>{
-    const {user,pwd} =req.body
+
+    try{
+
+         const {user,pwd} =req.body
 
     if(!user || !user){
       return res.status(400).json({'message':'Username and password are required'})
@@ -24,5 +27,10 @@ const handleNewUser = async (req ,res) =>{
         }catch(err){
          res.status(500).json({'message':err.message})
         }
+
+    }catch(err){
+        next(err)
+    }
+   
     }
     module.exports = {handleNewUser}

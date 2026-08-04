@@ -3,50 +3,48 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const handleLogin = async (req, res) => {
-  const { user, pwd } = req.body;
+  try {
+    const { user, pwd } = req.body;
 
-  if (!user || !pwd) {
-    return res
-      .status(400)
-      .json({ message: "Username and password are required" });
-  }
+    if (!user || !pwd) {
+      return res
+        .status(400)
+        .json({ message: "Username and password are required" });
+    }
 
-  const foundUser = await User.findOne({ username: user }).exec();
+    const foundUser = await User.findOne({ username: user }).exec();
 
-  if (!foundUser) return res.sendStatus(401);
+    if (!foundUser) return res.sendStatus(401);
 
-  const match = await bcrypt.compare(pwd, foundUser.password);
+    const match = await bcrypt.compare(pwd, foundUser.password);
 
-  if (match) {
-    const accessToken = jwt.sign(
-      { username: foundUser.username },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "30m" },
-    );
-    const refreshToken = jwt.sign(
-      { username: foundUser.username },
-      process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "1d" },
-    );
+    if (match) {
+      const accessToken = jwt.sign(
+        { username: foundUser.username },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "30m" },
+      );
+      const refreshToken = jwt.sign(
+        { username: foundUser.username },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "1d" },
+      );
 
-   
-
-
-    res
-      .status(200)
-      .cookie("jwt", refreshToken, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        path: "/",
-      })
-      .json({
-        accessToken,
-      });
-
-  } else {
-    res.sendStatus(401);
-  }
+      res
+        .status(200)
+        .cookie("jwt", refreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+          path: "/",
+        })
+        .json({
+          accessToken,
+        });
+    } else {
+      res.sendStatus(401);
+    }
+  } catch (err) {}
 };
 
 module.exports = { handleLogin };

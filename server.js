@@ -1,6 +1,8 @@
 require('dotenv').config()
 const express = require('express')
 const verifyJWT = require('./middleware/verifyJWT')
+const errorHandler = require('./middleware/errorHandler')
+const logger = require('./middleware/logger')
 
 const connectDB = require('./config/dbConn')
 const mongoose = require('mongoose')
@@ -11,12 +13,13 @@ const app = express()
 const PORT = process.env.PORT || 3500
 
 
-
 connectDB()
 
-//middleware
+app.use(logger)
 app.use(express.json())
 app.use(cookieParser())
+
+
 
 
 
@@ -27,14 +30,11 @@ app.use('/auth', require('./routes/auth'))//this is for login we will get access
 app.use('/refresh',require('./routes/refresh'))
 app.use('/logout',require('./routes/logout'))//this is for logout we will clear the cookie
 
-
-
-
-
 app.use(verifyJWT)
+
 app.use('/notes',require('./routes/notes'))
 
-
+app.use(errorHandler)
 
 
 
